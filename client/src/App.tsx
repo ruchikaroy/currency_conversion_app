@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import ConversionForm from "./ConversionForm";
+import { useState } from "react";
+import ConversionForm from "./ConversionComponent";
 import Header from "./Header";
 import axios from "axios";
 
@@ -11,19 +11,23 @@ const axiosInstance = axios.create({
 
 function App() {
   const currencies = ["AED", "GBP", "INR", "CAD", "USD"];
-
-  useEffect(() => {
-    axiosInstance
-      .get("/api/1/conversions")
-      .then((response) => console.log(response));
-  });
+  const [conversionValue, setConversionValue] = useState<number>(0);
 
   return (
     <>
       <Header />
       <ConversionForm
         currencySymbols={currencies}
-        onClick={() => console.log("clicked")}
+        onClick={() => {
+          axiosInstance
+            .get("/api/1/conversions")
+            .then((res) => res.data)
+            .then((data: number) => {
+              const result = Object.values(data);
+              setConversionValue(Number(result));
+            });
+        }}
+        value={conversionValue}
       />
     </>
   );
